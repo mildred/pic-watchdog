@@ -1,14 +1,15 @@
 exec >&2
 : ${SDCC_FLAGS:=}
 : ${CPP_FLAGS:=}
-CPP_FLAGS+=" -DPIC_18F -D__SDCC -Iinclude/usb"
-search_paths=". USB_stack/common"
+CPP_FLAGS+=" -DPIC_18F -D__SDCC -I../include/usb"
+search_paths=".. ../USB_stack/common"
 f=
 for d in $search_paths; do
   CPP_FLAGS+=" -I$d"
   if [ -z "$f" ] || ! [ -e "$f" ]; then
     f="$d/$2.c"
   fi
+  echo "Looking $(pwd)/$f"
 done
 
 SDCC_FLAGS+=" --use-non-free -mpic16 -p18f2550 $CPP_FLAGS"
