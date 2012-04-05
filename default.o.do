@@ -1,7 +1,7 @@
 exec >&2
 : ${SDCC_FLAGS:=}
 : ${CPP_FLAGS:=}
-CPP_FLAGS+=" -DPIC_18F -D__SDCC"
+CPP_FLAGS+=" -DPIC_18F -D__SDCC -Iinclude/usb"
 search_paths=". USB_stack/common"
 f=
 for d in $search_paths; do

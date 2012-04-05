@@ -1,1 +1,1 @@
-rm -rf *.redo* *~ *.o *.hex
+rm -rf *.redo* *~ *.o *.hex *.d
