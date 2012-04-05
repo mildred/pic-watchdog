@@ -1,19 +1,17 @@
 /*
-This work is licensed under the Creative Commons Attribution 3.0 Unported License.
-To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/
-or send a letter to
-        Creative Commons,
-        171 Second Street,
-        Suite 300,
-        San Francisco,
-        California,\
- * 
-        94105,
-        USA.
-*/
+ * This work is licensed under the Creative Commons Attribution 3.0 Unported
+ * License.
+ *
+ * To view a copy of this license, visit
+ * http://creativecommons.org/licenses/by/3.0/ or send a letter to
+ * Creative Commons, 171 Second Street, Suite 300,
+ * San Francisco, California, 94105, USA.
+ */
+
 // JTR v0.1a
 // JTR v0.1b  renamed BUSPIRATEV4 and all other wardware to be UPPERCASE 
 
+#include "usb_platform.h"
 
 /* JTR
 This file operates as the global header for <function> implementation
@@ -80,8 +78,8 @@ Low power request macro
 //#define usb_low_power_request() Nop()
 
 // place your vid/pid here
-#define USB_VID (0x0000)
-#define USB_PID (0x0000)
+#define USB_VID (0xAAAA)
+#define USB_PID (0xBBBB)
 #define USB_DEV 0x0002
 
 // place your usb descriptor strings here, assuming us english

@@ -1,25 +1,11 @@
-#include "pic18fregs.h"
+#include <pic18fregs.h>
+#include "usb_config.h"
+#include "GenericTypeDefs.h"
+#include <usb_stack.h>
+#include <cdc.h>
+#include <cdc_descriptors.h>
 
 #define LED_0              PORTBbits.RB0
-#define TRIS_0             TRISBbits.TRISB0
-
-// Set the __CONFIG words, see datasheet section 25.1: Configuration bits
-
-// To use the internal oscillator, change CONFIG1H to _OSC_INTOSC__INTOSC_CLK0_RA6___USB_EC_1H
-
-#define cfg(address) __code char __at __CONFIG##address
-
-cfg(1H) _conf0 = _OSC_HS__USB_HS_1H;
-//__code char __at __CONFIG2L _conf1 = _BODEN_OFF_2L;
-//__code char __at __CONFIG2H _conf2 = _WDT_DISABLED_CONTROLLED_2H;
-cfg(3H) _conf3 = _MCLRE_MCLR_OFF_RE3_ON_3H;
-cfg(4L) _conf4 = _LVP_OFF_4L;
-//__code char __at __CONFIG5L _conf5 = _CP_0_OFF_5L & _CP_1_OFF_5L;
-//__code char __at __CONFIG5H _conf6 = _CPD_OFF_5H & _CPB_OFF_5H;
-//__code char __at __CONFIG6L _conf7 = _WRT_0_OFF_6L & _WRT_1_OFF_6L;
-//__code char __at __CONFIG6H _conf8 = _WRTD_OFF_6H & _WRTB_OFF_6H & _WRTC_OFF_6H;
-//__code char __at __CONFIG7L _conf9 = _EBTR_0_OFF_7L & _EBTR_1_OFF_7L;
-//__code char __at __CONFIG7H _conf10 = _EBTRB_OFF_7H;
 
 void delay_ms(long ms)
 {
@@ -29,17 +15,102 @@ void delay_ms(long ms)
         for (i=0; i < 166; i++);
 }
 
+void swled(){
+  LED_0 = LED_0 ? 0 : 1;
+  delay_ms(100);
+}
+
 void main(void)
 {
+    unsigned char c,x,y,led;
+    led = 0;
+    LED_0 = led;
+
     // Initiate Osc with 8MHz (only relevant if you use the internal oscillator)
     //OSCCON = 0x70;
     
 	  // Default all pins to digital
     ADCON1 |= 0x0F;
+    
+    
+    initCDC();
+    
+    
+    usb_init(cdc_device_descriptor, cdc_config_descriptor, cdc_str_descs, USB_NUM_STRINGS); // TODO: Remove magic with macro
+    usb_start();
+#if defined (USB_INTERRUPTS)
+    //EnableUsbInterrupt(USB_TRN + USB_SOF + USB_UERR + USB_URST);
+    EnableUsbInterrupt(USB_STALL + USB_IDLE + USB_TRN + USB_ACTIV + USB_SOF + USB_UERR + USB_URST);
+    EnableUsbInterrupts();
+#endif
+    usbbufflush(); //flush USB input buffer system
 
+#if 1
     // set pin to output
-    TRIS_0 = 0;
-        
+    TRISBbits.TRISB0 = 0;
+
+    while(1)
+    {
+        LED_0 = 1;
+        delay_ms(250);
+        LED_0 = 0;
+        delay_ms(250);
+    }
+#endif
+    do
+    {
+#ifndef USB_INTERRUPTS
+        //service USB tasks
+        //Guaranteed one pass in polling mode
+        //even when usb_device_state == CONFIGURED_STATE
+        if (!TestUsbInterruptEnabled())
+        {
+            USBDeviceTasks();
+        }
+#endif
+            swled();
+
+        if ((usb_device_state < DEFAULT_STATE))
+        { // JTR2 no suspendControl available yet || (USBSuspendControl==1) ){
+
+        } else if (usb_device_state < CONFIGURED_STATE)
+        {
+
+        }else if((usb_device_state == CONFIGURED_STATE))
+        {
+
+        }
+    } while (usb_device_state < CONFIGURED_STATE);
+
+    #if 1
+
+    while(1)
+    {
+        LED_0 = led;
+        led = led ? 0 : 1;
+#ifndef USB_INTERRUPTS
+        //service USB tasks
+        //Guaranteed one pass in polling mode
+        //even when usb_device_state == CONFIGURED_STATE
+        if (!TestUsbInterruptEnabled())
+            USBDeviceTasks();
+#endif
+        usbbufservice(); //service USB buffer system
+
+        if (usbbufgetbyte(&c) == 1)
+        {
+            WaitInReady();
+            cdc_In_buffer[0] = c; //answer OK
+            putUnsignedCharArrayUsbUsart(cdc_In_buffer, 1);
+        }
+
+    }
+    
+    #endif
+    
+    // set pin to output
+    TRISBbits.TRISB0 = 0;
+    
     // start a loop blinking the led
     while(1)
     {

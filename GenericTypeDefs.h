@@ -75,7 +75,7 @@ typedef signed short int    INT16;
 typedef signed long int     INT32;
 
 /* MPLAB C Compiler for PIC18 does not support 64-bit integers */
-#if !defined(__18CXX)
+#if !defined(__18CXX) && !defined(__SDCC)
 __EXTENSION typedef signed long long    INT64;
 #endif
 
@@ -84,12 +84,12 @@ typedef unsigned int        UINT;
 typedef unsigned char       UINT8;
 typedef unsigned short int  UINT16;
 /* 24-bit type only available on C18 */
-#if defined(__18CXX)
+#if defined(__18CXX) && !defined(__SDCC)
 typedef unsigned short long UINT24;
 #endif
 typedef unsigned long int   UINT32;     /* other name for 32-bit integer */
 /* MPLAB C Compiler for PIC18 does not support 64-bit integers */
-#if !defined(__18CXX)
+#if !defined(__18CXX) && !defined(__SDCC)
 __EXTENSION typedef unsigned long long  UINT64;
 #endif
 
@@ -241,7 +241,7 @@ typedef union
 } UINT32_VAL;
 
 /* MPLAB C Compiler for PIC18 does not support 64-bit integers */
-#if !defined(__18CXX)
+#if !defined(__18CXX) && !defined(__SDCC)
 typedef union
 {
     UINT64 Val;
@@ -341,15 +341,19 @@ typedef unsigned char           UCHAR8;
 typedef unsigned char           BYTE;                           /* 8-bit unsigned  */
 typedef unsigned short int      WORD;                           /* 16-bit unsigned */
 typedef unsigned long           DWORD;                          /* 32-bit unsigned */
+#if !defined(__SDCC)
 /* MPLAB C Compiler for PIC18 does not support 64-bit integers */
 __EXTENSION
 typedef unsigned long long      QWORD;                          /* 64-bit unsigned */
+#endif
 typedef signed char             CHAR;                           /* 8-bit signed    */
 typedef signed short int        SHORT;                          /* 16-bit signed   */
 typedef signed long             LONG;                           /* 32-bit signed   */
+#if !defined(__SDCC)
 /* MPLAB C Compiler for PIC18 does not support 64-bit integers */
 __EXTENSION
 typedef signed long long        LONGLONG;                       /* 64-bit signed   */
+#endif
 typedef union
 {
     BYTE Val;
@@ -455,6 +459,7 @@ typedef union
     } bits;
 } DWORD_VAL;
 
+#if !defined(__SDCC)
 /* MPLAB C Compiler for PIC18 does not support 64-bit integers */
 typedef union
 {
@@ -542,6 +547,7 @@ typedef union
         __EXTENSION BYTE b63:1;
     } bits;
 } QWORD_VAL;
+#endif /* !defined(__SDCC) */
 
 #undef __EXTENSION
 

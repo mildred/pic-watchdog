@@ -1,13 +1,20 @@
 exec >&2
 : ${SDCC_FLAGS:=}
-SDCC_FLAGS+=" -DPIC_18F"
+: ${CPP_FLAGS:=}
+CPP_FLAGS+=" -DPIC_18F -D__SDCC"
 search_paths=". USB_stack/common"
+f=
 for d in $search_paths; do
-  SDCC_FLAGS+=" -I$d"
-  f="$d/$2.c"
-  if [ -e "$f" ]; then
-    break
+  CPP_FLAGS+=" -I$d"
+  if [ -z "$f" ] || ! [ -e "$f" ]; then
+    f="$d/$2.c"
   fi
 done
+
+SDCC_FLAGS+=" --use-non-free -mpic16 -p18f2550 $CPP_FLAGS"
+
 redo-ifchange $f
-sdcc -c --use-non-free -mpic16 -p18f2550 $SDCC_FLAGS $f -o $3
+sdcc -E $SDCC_FLAGS $f | egrep '^#\s*[0-9]+' | sed 's/^.*"\(.*\)".*$/\1/' | sort | uniq | grep -v '^<' | xargs -d'\n' redo-ifchange
+
+sdcc -c $SDCC_FLAGS $f -o $3
+

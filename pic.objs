@@ -1,0 +1,1 @@
+pic.o usb_stack.o cdc.o platform_usb.o
