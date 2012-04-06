@@ -54,7 +54,7 @@ Low power request macro
 //#define USE_HID
 
 // usb hardware config
-#define USB_BUS_POWERED 1
+#define USB_BUS_POWERED 0
 #define USB_INTERNAL_TRANSCIEVER 1
 #define USB_INTERNAL_PULLUPS 1
 #define USB_INTERNAL_VREG 1

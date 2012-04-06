@@ -12,7 +12,7 @@ void delay_ms(long ms)
     long i;
     
     while (ms--)
-        for (i=0; i < 166; i++);
+        for (i=0; i < 335; i++);
 }
 
 void swled(){
@@ -32,8 +32,8 @@ void main(void)
     while(1)
     {
         LED_0 = 1;
-        delay_ms(250);
+        delay_ms(1000);
         LED_0 = 0;
-        delay_ms(250);
+        delay_ms(1000);
     }
 }
